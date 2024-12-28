@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">DZ13</string>
+    <string name="result">Здесь будет отображаться результат запроса</string>
+    <string name="request">Введите строку для поиска</string>
+    <string name="search">Поиск</string>
+</resources>
