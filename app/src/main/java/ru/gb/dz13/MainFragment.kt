@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.gb.dz13.databinding.FragmentMainBinding
@@ -61,6 +62,7 @@ class MainFragment : Fragment() {
             if (binding.request.length() > 3) {
                 searchFlow
                     .debounce(300)
+                    .distinctUntilChanged()
                     .onEach {
                         checkText()
                     }
