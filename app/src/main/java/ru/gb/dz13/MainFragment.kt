@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    val searchFlow = MutableStateFlow("")
+    private val searchFlow = MutableStateFlow("")
     private fun checkText() {
         if (credentials.value.streams) {
             Log.d("myTag", credentials.value.streams.toString())

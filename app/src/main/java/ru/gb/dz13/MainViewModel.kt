@@ -22,7 +22,7 @@ class MainViewModel() : ViewModel() {
     private val _credentials = MutableStateFlow(Credentials())
     val credentials = _credentials.asStateFlow()
 
-    var job = viewModelScope
+    private var job = viewModelScope
 
     @SuppressLint("SetTextI18n")
     fun onSignInClick() {
