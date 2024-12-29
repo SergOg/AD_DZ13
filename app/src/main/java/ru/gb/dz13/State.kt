@@ -6,7 +6,6 @@ sealed class State(
 ) {
     object Loading : State(isLoading = true)
     object Success : State()
-    object Stopping : State(isLoading = false)
     data class Error(
         override val requestError: String?
     ) : State(
