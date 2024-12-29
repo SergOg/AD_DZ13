@@ -3,7 +3,7 @@ package ru.gb.dz13
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +23,11 @@ class MainViewModel() : ViewModel() {
     val credentials = _credentials.asStateFlow()
 
     private var job = viewModelScope
+    private var searchJob: Job? = null
 
     @SuppressLint("SetTextI18n")
     fun onSignInClick() {
-        job.launch {
+        searchJob = viewModelScope.launch {
             yield()
             _state.value = State.Loading
             delay(5000)
@@ -39,7 +40,7 @@ class MainViewModel() : ViewModel() {
     }
 
     fun stopClick() {
-//        job.cancel()              //Отменить текущий поток
+        searchJob?.cancel()              //Отменить текущий поток
         _state.value = State.Success
         _state.value = State.Error("")
         if (credentials.value.streams) onSignInClick()

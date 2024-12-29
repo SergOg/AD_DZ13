@@ -49,7 +49,6 @@ class MainFragment : Fragment() {
             Log.d("myTag", credentials.value.streams.toString())
             viewModel.stopClick()
         }
-        binding.invalidateAll()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
