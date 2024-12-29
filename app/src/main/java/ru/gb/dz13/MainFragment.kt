@@ -2,19 +2,18 @@ package ru.gb.dz13
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.gb.dz13.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
@@ -26,7 +25,6 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null       //так будет для фрагмента
     private val binding get() = _binding!!
 
-    //    private lateinit var binding: FragmentMainBinding     //так будет для активити
     private val viewModel: MainViewModel by viewModels()
 
     private val _credentials = MutableStateFlow(Credentials())
@@ -40,17 +38,17 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    val searchFlow = MutableStateFlow("")
     private fun checkText() {
-//        if (binding.request.length() > 3) {
-//            binding.button.isEnabled = true
-//        } else binding.button.isEnabled = false
-        val requests = viewModel.credentials.value.request
-//        val requests = binding.request.text
-//        binding.textView.text = requests
-
-        if (requests.length > 3) {
+        if (credentials.value.streams) {
+            Log.d("myTag", credentials.value.streams.toString())
+            credentials.value.streams = false
             viewModel.onSignInClick()
-        } else viewModel.stopClick()
+        } else {
+            Log.d("myTag", credentials.value.streams.toString())
+            viewModel.stopClick()
+        }
+        binding.invalidateAll()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,41 +58,14 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         binding.request.doOnTextChanged { text, start, before, count ->
-            checkText()
+            if (binding.request.length() > 3) {
+                searchFlow
+                    .debounce(300)
+                    .onEach {
+                        checkText()
+                    }
+                    .launchIn(viewModel.viewModelScope)
+            }
         }
-
-        /*        binding.button.setOnClickListener {
-                    val request = binding.request.text.toString()
-                    viewModel.onSignInClick(request)
-                }*/
-        /*        viewLifecycleOwner.lifecycleScope
-                    .launch {
-                        repeatOnLifecycle(Lifecycle.State.STARTED) {
-                            viewModel.state
-                                .collect { state ->
-                                    when (state) {
-                                        State.Loading -> {
-                                            status(true, null)
-                                            binding.button.isEnabled = false
-                                        }
-
-                                        State.Success -> {
-                                            status(false, null)
-                                            checkText()
-                                        }
-
-                                        is State.Error -> {
-                                            binding.progress.isVisible = false
-                                            binding.textView.text = state.requestError
-                                            checkText()
-                                        }
-                                    }
-                                }
-                        }
-                    }*/
     }
-    /*    private fun status(t: Boolean, s: String?) {
-            binding.progress.isVisible = t
-            binding.requestLayout.error = s
-        }*/
 }

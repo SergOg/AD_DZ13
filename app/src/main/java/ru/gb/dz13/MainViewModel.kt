@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 class MainViewModel() : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Success)
@@ -21,29 +22,26 @@ class MainViewModel() : ViewModel() {
     private val _credentials = MutableStateFlow(Credentials())
     val credentials = _credentials.asStateFlow()
 
+    var job = viewModelScope
+
     @SuppressLint("SetTextI18n")
     fun onSignInClick() {
-        viewModelScope.launch {
+        job.launch {
+            yield()
+            _state.value = State.Loading
+            delay(5000)
+            _state.value = State.Success
             val request = credentials.value.request
-//            var isRequestEmpty = request.isBlank()
-//            if (request.length < 3) {
-//                isRequestEmpty = false
-//            } else {
-//                isRequestEmpty = true
-//            }
-//            if (isRequestEmpty) {
-//                _error.send("Request not valid")
-
-//                _state.value = State.Stopping
-//            } else {
-                _state.value = State.Loading
-                delay(2000)
-                _state.value = State.Success
-                _state.value = State.Error("По запросу " + request + " ничего не найдено!")
-//            }
+            if (request.length > 3) _state.value =
+                State.Error("По запросу " + request + " ничего не найдено!")
+            credentials.value.streams = true
         }
     }
-    fun stopClick(){
-        viewModelScope.cancel()
+
+    fun stopClick() {
+//        job.cancel()              //Отменить текущий поток
+        _state.value = State.Success
+        _state.value = State.Error("")
+        if (credentials.value.streams) onSignInClick()
     }
 }
