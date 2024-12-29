@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -26,9 +25,6 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: MainViewModel by viewModels()
-
-    private val _credentials = MutableStateFlow(Credentials())
-    private val credentials = _credentials.asStateFlow()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
