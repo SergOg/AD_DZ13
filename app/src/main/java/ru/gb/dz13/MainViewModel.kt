@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 
 class MainViewModel() : ViewModel() {
     private val _state = MutableStateFlow<State>(State.Success)
