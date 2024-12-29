@@ -40,16 +40,6 @@ class MainFragment : Fragment() {
     }
 
     private val searchFlow = MutableStateFlow("")
-    private fun checkText() {
-        if (credentials.value.streams) {
-            Log.d("myTag", credentials.value.streams.toString())
-            credentials.value.streams = false
-            viewModel.onSignInClick()
-        } else {
-            Log.d("myTag", credentials.value.streams.toString())
-            viewModel.stopClick()
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,7 +53,7 @@ class MainFragment : Fragment() {
                     .debounce(300)
                     .distinctUntilChanged()
                     .onEach {
-                        checkText()
+                        viewModel.onSignInClick()
                     }
                     .launchIn(viewModel.viewModelScope)
             }

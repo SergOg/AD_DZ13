@@ -22,13 +22,13 @@ class MainViewModel() : ViewModel() {
     private val _credentials = MutableStateFlow(Credentials())
     val credentials = _credentials.asStateFlow()
 
-    private var job = viewModelScope
     private var searchJob: Job? = null
 
     @SuppressLint("SetTextI18n")
     fun onSignInClick() {
+        _state.value = State.Success
+        searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            yield()
             _state.value = State.Loading
             delay(5000)
             _state.value = State.Success
@@ -37,12 +37,5 @@ class MainViewModel() : ViewModel() {
                 State.Error("По запросу " + request + " ничего не найдено!")
             credentials.value.streams = true
         }
-    }
-
-    fun stopClick() {
-        searchJob?.cancel()              //Отменить текущий поток
-        _state.value = State.Success
-        _state.value = State.Error("")
-        if (credentials.value.streams) onSignInClick()
     }
 }
